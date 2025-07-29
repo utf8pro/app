@@ -1,5 +1,6 @@
 {
   "name": "@utf8pro/app",
+  "private": false,
   "module": "index.ts",
   "type": "module",
   "devDependencies": {
