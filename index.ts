@@ -94,7 +94,7 @@ export type TApp = {
 export type TAppParams = {
   routesDir?: string
   cacheRoutes?: boolean
-  notFoundHandler?: THandler;
+  notFoundHandler?: THandler
 }
 
 export type TContext = {
