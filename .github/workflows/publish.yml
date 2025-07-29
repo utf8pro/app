@@ -1,0 +1,26 @@
+name: NPM Package
+on:
+  push:
+    tags:
+      - 'v*'
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Extract version from tag
+        id: get_version
+        run: |
+          TAG_REF="${{ github.ref }}"
+          VERSION=$(echo "$TAG_REF" | sed 's/refs\/tags\/v//')
+          echo "Extracted version: $VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      - name: Set npm version
+        uses: BellCubeDev/update-package-version-by-release-tag@v2
+        with:
+          version: "${{ steps.get_version.outputs.version }}"
+      - uses: oven-sh/setup-bun@v2
+      - run: bun publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
