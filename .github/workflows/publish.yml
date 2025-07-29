@@ -20,7 +20,14 @@ jobs:
         uses: BellCubeDev/update-package-version-by-release-tag@v2
         with:
           version: "${{ steps.get_version.outputs.version }}"
-      - uses: oven-sh/setup-bun@v2
-      - run: bun publish
+
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Configure npm registry and token
+        run: |
+          npm config set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
+
+      - run: Bun publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
