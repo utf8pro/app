@@ -19,7 +19,7 @@ export default function app(params: TAppParams = {}): TApp {
   } => {
     const route = router.match(req)
     if (route) {
-      const ctx = createContext(req, route.query, route.params)
+      const ctx = createContext(req, route.pathname, route.query, route.params)
       let handler
       if (cacheRoutes) {
         handler = cachedRoutes.get(route.filePath)
@@ -35,7 +35,7 @@ export default function app(params: TAppParams = {}): TApp {
       }
       return {ctx, handler: handler!}
     }
-    return {ctx: createContext(req, {}, {}), handler: notFoundHandler!}
+    return {ctx: createContext(req, "", {}, {}), handler: notFoundHandler!}
   }
 
   return {
@@ -82,8 +82,11 @@ const defaultParams: TAppParams = {
   notFoundHandler: async () => Response.json({error: "NotFound"}, {status: 404}),
 }
 
-function createContext(request: Request, query: Record<string, string>, params: Record<string, string>): TContext {
-  return {request, query, params}
+function createContext(request: Request, pathname: string, query: Record<string, string>, params: Record<string, string>): TContext {
+  if (pathname === "") {
+    pathname = new URL(request.url).pathname
+  }
+  return {request, pathname, query, params}
 }
 
 export type TApp = {
@@ -99,6 +102,7 @@ export type TAppParams = {
 
 export type TContext = {
   request: Request
+  pathname: string
   query: Record<string, string>
   params: Record<string, string>
 }
